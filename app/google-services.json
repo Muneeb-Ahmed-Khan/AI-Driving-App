@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "439527998974",
+    "project_id": "ai-driving-app",
+    "storage_bucket": "ai-driving-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439527998974:android:aa245be3ee8048afe7acaf",
+        "android_client_info": {
+          "package_name": "com.example.ai_driving_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmV9rSK_E6QqQF3NGzJSqAxnbgLwXMqsc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
