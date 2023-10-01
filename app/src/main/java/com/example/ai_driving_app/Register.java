@@ -6,19 +6,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class Register extends AppCompatActivity {
 
     private EditText usernameEditText, emailEditText, confirmEmailEditText, passwordEditText;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        firebaseAuth = FirebaseAuth.getInstance();
 
         // Initialize EditText fields and the Register button
         usernameEditText = findViewById(R.id.Username);
@@ -56,22 +64,30 @@ public class Register extends AppCompatActivity {
                 return;
             }
 
+                    if (email.isEmpty() || password.isEmpty()) {
+                        Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-            // Send data to Firebase
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users");
-            String userId = databaseReference.push().getKey();
-            User user = new User(userId, username, email, password);
+                    // Create a new user with email and password
+                    firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Registration success, update UI accordingly
+                                        Toast.makeText(Register.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+                                        // You can add further actions here, such as opening a new activity
+                                        Intent intent = new Intent(Register.this, Login.class);
+                                        startActivity(intent);
+                                        finish();
 
-            assert userId != null;
-            databaseReference.child(userId).setValue(user);
+                                    } else {
+                                        // If registration fails, display a message to the user.
+                                        Toast.makeText(Register.this, "Registration failed. Please try again.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
 
-            // Redirect to Login activity
-            Intent intent = new Intent(Register.this, Login.class);
-            startActivity(intent);
-            finish(); // Optional, this will finish the current activity to prevent going back to it from the login screen
-
-            // Display confirmation message
-            Toast.makeText(Register.this, "Registration Successful", Toast.LENGTH_SHORT).show();
         });
     }
 }
