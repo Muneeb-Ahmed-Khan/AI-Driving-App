@@ -1,14 +1,14 @@
 package com.example.ai_driving_app;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
-public class Registeration extends AppCompatActivity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class home extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registeration);
+        setContentView(R.layout.activity_home);
     }
 }
