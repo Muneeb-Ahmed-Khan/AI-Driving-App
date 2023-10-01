@@ -1,5 +1,6 @@
 package com.example.ai_driving_app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -63,6 +64,11 @@ public class Register extends AppCompatActivity {
 
             assert userId != null;
             databaseReference.child(userId).setValue(user);
+
+            // Redirect to Login activity
+            Intent intent = new Intent(Register.this, Login.class);
+            startActivity(intent);
+            finish(); // Optional, this will finish the current activity to prevent going back to it from the login screen
 
             // Display confirmation message
             Toast.makeText(Register.this, "Registration Successful", Toast.LENGTH_SHORT).show();
