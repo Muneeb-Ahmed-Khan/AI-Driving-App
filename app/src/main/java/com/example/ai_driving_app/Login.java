@@ -61,7 +61,7 @@ public class Login extends AppCompatActivity {
                             // Login success, update UI accordingly
                             Toast.makeText(Login.this, "Login successful!", Toast.LENGTH_SHORT).show();
 
-                            Intent intent = new Intent(Login.this, home.class);
+                            Intent intent = new Intent(Login.this, MainActivity.class);
                             startActivity(intent);
                             finish();
                             // You can add further actions here, such as opening a new activity
@@ -71,6 +71,7 @@ public class Login extends AppCompatActivity {
                         }
                     }
         });
+
     }
 
     // Method to handle "Create an Account" click event

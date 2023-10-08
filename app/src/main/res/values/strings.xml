@@ -17,4 +17,9 @@
     <string name="Email">Email</string>
     <string name="Password">Password</string>
     <string name="Register">Register</string>
+    <string name="sign_in_to_continue">Sign in to Continue</string>
+    <string name="create_new_account">Create New account</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="create_new_account_">Create New Account</string>
+    <string name="already_registered_log_in_here">Already Registered?Log in here</string>
 </resources>

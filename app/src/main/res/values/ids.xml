@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="feedback" type="id">feedback</item>
-    <item name="feedbackTextView" type="id">feedbackTextView</item>
+<!--    <item name="feedback" type="id">feedback</item>-->
+<!--    <item name="feedbackTextView" type="id">feedbackTextView</item>-->
 </resources>

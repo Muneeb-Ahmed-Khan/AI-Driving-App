@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="#E7E7E7"
     android:padding="16dp"
     android:fillViewport="true"
     tools:context=".Register">
@@ -15,92 +15,100 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="220dp"
-            android:layout_height="220dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="20dp"
-            android:src="@drawable/logo" />
 
         <TextView
-            android:text="@string/register"
-            android:layout_width="wrap_content"
+            android:layout_width="294dp"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:textColor="#FFA500"
+            android:layout_marginBottom="20dp"
+            android:text="@string/create_new_account_"
+            android:textColor="#535353"
+            android:textSize="45sp"
             android:textStyle="bold"
-            android:layout_marginBottom="20dp" />
+            tools:ignore="TextSizeCheck" />
 
+        <TextView
+            android:layout_width="294dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/already_registered_log_in_here"
+            android:textColor="#535353"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            tools:ignore="TextSizeCheck" />
         <EditText
             android:id="@+id/Username"
             android:layout_width="330dp"
-            android:layout_height="wrap_content"
+            android:layout_height="66dp"
             android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_corner_background"
             android:layout_marginBottom="8dp"
-            android:background="#FFFFFF"
+
             android:hint="@string/username"
             android:inputType="text"
             android:minHeight="48dp"
             android:padding="10dp"
             android:textColor="#000000"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:autofillHints="" />
 
         <EditText
             android:id="@+id/Email"
             android:layout_width="330dp"
-            android:layout_height="wrap_content"
+            android:layout_height="66dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:background="#FFFFFF"
+            android:background="@drawable/rounded_corner_background"
             android:hint="@string/Email"
             android:textStyle="bold"
             android:inputType="textEmailAddress"
             android:minHeight="48dp"
             android:padding="10dp"
-            android:textColor="#000000" />
+            android:textColor="#000000"
+            android:autofillHints="" />
 
         <EditText
             android:id="@+id/ConfirmEmail"
             android:textStyle="bold"
             android:layout_width="330dp"
-            android:layout_height="wrap_content"
+            android:layout_height="66dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:background="#FFFFFF"
+            android:background="@drawable/rounded_corner_background"
             android:hint="@string/Confirm_email"
             android:inputType="textEmailAddress"
             android:minHeight="48dp"
             android:padding="10dp"
             android:textColor="#000000"
-            android:textColorHint="#A1887F" />
+            android:textColorHint="#A1887F"
+            android:autofillHints="" />
 
         <EditText
             android:id="@+id/Password"
             android:textStyle="bold"
             android:layout_width="330dp"
-            android:layout_height="wrap_content"
+            android:layout_height="66dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
-            android:background="#FFFFFF"
+            android:background="@drawable/rounded_corner_background"
             android:hint="@string/Password"
             android:inputType="textPassword"
             android:minHeight="48dp"
             android:padding="10dp"
-            android:textColor="#000000" />
+            android:textColor="#000000"
+            android:autofillHints="" />
 
         <Button
             android:id="@+id/btn_Register"
-            android:layout_width="wrap_content"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:background="#FFB500"
+            android:background="@drawable/rounded_button"
             android:paddingStart="20dp"
             android:paddingTop="10dp"
             android:paddingEnd="20dp"
             android:paddingBottom="10dp"
             android:text="@string/Register"
-            android:textColor="#546E7A"
+            android:textColor="#FFF"
             android:textSize="20sp"
             android:textStyle="bold" />
 

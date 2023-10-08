@@ -6,87 +6,104 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="#000000"
+    android:background="#E7E7E7"
     tools:context=".Login">
 
 
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="220dp"
-        android:layout_height="220dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20dp"
-        android:src="@drawable/logo" />
 
     <TextView
         android:text="@string/login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
+        android:textSize="35sp"
         android:textStyle="bold"
-        android:textColor="#FFA500"
+        android:textColor="#535353"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:text="@string/sign_in_to_continue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:textColor="#535353"
         android:layout_marginBottom="20dp"
         android:layout_gravity="center" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/Email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="327dp"
+        android:layout_height="66dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:background="@drawable/rounded_corner_background"
         android:hint="@string/email"
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
-        android:background="#FFFFFF"
+        android:padding="10dp"
         android:textColor="@color/black"
         android:textStyle="bold"
-        android:padding="10dp"
         tools:ignore="VisualLintTextFieldSize" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/Password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="327dp"
+        android:layout_height="66dp"
+        android:background="@drawable/rounded_corner_background"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:hint="@string/password"
         android:inputType="textPassword"
         android:minHeight="48dp"
-        android:background="#FFFFFF"
-        android:textColor="#000000"
         android:padding="10dp"
+        android:textColor="#000000"
         tools:ignore="VisualLintTextFieldSize" />
 
     <Button
         android:id="@+id/btn_login"
-        android:layout_width="wrap_content"
-        android:onClick="onLoginClick"
+        android:layout_width="294dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:background="#FFA500"
+        android:background="@drawable/rounded_button"
+        android:onClick="onLoginClick"
         android:paddingStart="20dp"
         android:paddingTop="10dp"
         android:paddingEnd="20dp"
         android:paddingBottom="10dp"
         android:text="@string/login_btn"
-        android:textColor="#616161"
+        android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold" />
+
 
     <TextView
         android:id="@+id/create_account_link"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="28dp"
         android:clickable="true"
         android:minHeight="48dp"
         android:onClick="onCreateAccountClick"
-        android:text="Create New account"
-        android:textColor="#FFA500"
+        android:text="@string/create_new_account"
+        android:textColor="#535353"
+
         android:textStyle="bold" />
+    <TextView
+        android:id="@+id/forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:minHeight="48dp"
+        android:onClick="onCreateAccountClick"
+        android:text="@string/forgot_password"
+        android:textColor="#535353"
+        android:textStyle="bold" />
+
 
 
 </LinearLayout>
