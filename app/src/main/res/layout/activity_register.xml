@@ -109,7 +109,7 @@
             android:paddingBottom="10dp"
             android:text="@string/Register"
             android:textColor="#FFF"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
     </LinearLayout>
