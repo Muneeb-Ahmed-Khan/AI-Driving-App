@@ -22,4 +22,16 @@
     <string name="forgot_password">Forgot Password</string>
     <string name="create_new_account_">Create New Account</string>
     <string name="already_registered_log_in_here">Already Registered?Log in here</string>
+    <string name="todo">TODO</string>
+    <string name="posted_number_of_hours_ago">Posted number of hours ago</string>
+    <string name="news">NEWS!</string>
+    <string name="actual_news_goes_here">Actual news goes here</string>
+    <string name="welcome_jonee_doen">WELCOME\nJohn Doe</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="update_profile">Update Profile</string>
+    <string name="enter_your_name">Enter Your Name</string>
+    <string name="occupation">Occupation</string>
+    <string name="enter_your_email_address">Enter your Email Address</string>
+    <string name="address">Address</string>
+    <string name="enter_your_password">Enter Your Password</string>
 </resources>
