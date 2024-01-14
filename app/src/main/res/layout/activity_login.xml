@@ -99,7 +99,7 @@
         android:layout_gravity="center"
         android:clickable="true"
         android:minHeight="48dp"
-        android:onClick="onCreateAccountClick"
+        android:onClick="onForgetPasswordClick"
         android:text="@string/forgot_password"
         android:textColor="#535353"
         android:textStyle="bold" />
