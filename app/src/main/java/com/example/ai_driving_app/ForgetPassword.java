@@ -27,7 +27,7 @@ public class ForgetPassword extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
 
         // Initialize EditText field
-        emailEditText = (EditText)findViewById(R.id.forgetPasswordEmail);
+        emailEditText = findViewById(R.id.Email);
     }
 
     public void onResetPasswordClick(View view) {
