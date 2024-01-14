@@ -10,7 +10,6 @@
     <!-- Toolbar -->
 
     <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="#d1d4d9">
@@ -47,10 +46,11 @@
             <!-- Hamburger icon -->
             <ImageView
                 android:id="@+id/hamburgerIcon"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="49dp"
+                android:layout_height="34dp"
                 android:layout_below="@id/notificationIcon"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:src="@drawable/hamburger" />
         </RelativeLayout>
     </RelativeLayout>
@@ -220,9 +220,7 @@
             android:padding="8dp"/>
     </LinearLayout>
 
-
-
-
-
 </RelativeLayout>
+
+
 
