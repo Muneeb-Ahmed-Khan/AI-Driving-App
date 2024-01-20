@@ -34,4 +34,7 @@
     <string name="enter_your_email_address">Enter your Email Address</string>
     <string name="address">Address</string>
     <string name="enter_your_password">Enter Your Password</string>
+    <string name="chatbot_icon">Chatbot Icon</string>
+    <string name="submit">Submit</string>
+    <string name="enter_your_address">Enter your address</string>
 </resources>

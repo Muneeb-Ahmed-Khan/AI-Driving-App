@@ -1,8 +1,9 @@
 <!-- circular_background.xml -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-    <solid android:color="@android:color/transparent" /> <!-- Set the color you desire, or keep it transparent -->
+    <solid android:color="@android:color/white" /> <!-- Set the background color to white -->
     <stroke
         android:width="2dp"
-        android:color="#000000" /> <!-- Set the border color and width -->
+        android:color="#000000"
+        /> <!-- Set the border color and width -->
 </shape>
