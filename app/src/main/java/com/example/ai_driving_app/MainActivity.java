@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView profileIcon = findViewById(R.id.profileIcon);
         ImageView bulbIcon = findViewById(R.id.learnQuizBulb);
+        ImageView chatBotIcon = findViewById(R.id.chatBotIcon);
 
 
         profileIcon.setOnClickListener(view -> {
@@ -27,8 +28,13 @@ public class MainActivity extends AppCompatActivity {
         bulbIcon.setOnClickListener(view -> {
             learnQuiz();
         });
+
+        chatBotIcon.setOnClickListener(view -> {
+            onChatBotIconClick();
+
+        });
     }
-    private void redirectToProfilePage() {
+    public void redirectToProfilePage() {
 
         Intent intent = new Intent(MainActivity.this, profile.class);
         startActivity(intent);
@@ -40,14 +46,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-//        Button quizButton = findViewById(R.id.submitButton);
-//        quizButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, Quiz.class);
-//                startActivity(intent);
-//            }
-//        });
+    private  void onChatBotIconClick(){
+
+        Intent intent = new Intent(MainActivity.this, chatbotmenu.class);
+        startActivity(intent);
+    }
+
 
     }
 
