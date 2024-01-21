@@ -33,26 +33,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="16dp">
-
-            <!-- Notification icon -->
-            <ImageView
-                android:id="@+id/notificationIcon"
-                android:layout_width="47dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/notification" />
-
-            <!-- Hamburger icon -->
-            <ImageView
-                android:id="@+id/hamburgerIcon"
-                android:layout_width="49dp"
-                android:layout_height="34dp"
-                android:layout_below="@id/notificationIcon"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:src="@drawable/hamburger" />
-        </RelativeLayout>
+            android:layout_marginEnd="16dp"/>
     </RelativeLayout>
 
 
@@ -215,16 +196,6 @@
             android:onClick="onChatBotIconClick"
             android:padding="8dp"
             android:src="@drawable/chatbot" />
-
-        <ImageView
-            android:layout_width="0dp"
-
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/settings"
-            android:contentDescription="Settings Icon"
-
-            android:padding="8dp"/>
 
         <!-- Profile Icon -->
         <ImageView
