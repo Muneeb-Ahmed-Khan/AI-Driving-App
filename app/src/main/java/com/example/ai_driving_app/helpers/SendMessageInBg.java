@@ -2,7 +2,7 @@ package com.example.ai_driving_app.helpers;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import com.bae.dialogflowbot.interfaces.BotReply;
+import com.example.ai_driving_app.interfaces.BotReply;
 import com.google.cloud.dialogflow.v2.DetectIntentRequest;
 import com.google.cloud.dialogflow.v2.DetectIntentResponse;
 import com.google.cloud.dialogflow.v2.QueryInput;

@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.ai_driving_app.R;
 import com.example.ai_driving_app.models.Message;
 import java.util.List;
