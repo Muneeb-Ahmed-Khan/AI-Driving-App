@@ -14,9 +14,11 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".chatbot"
+            android:exported="false" />
+        <activity
             android:name=".chatbotmenu"
             android:exported="false" />
-
         <activity
             android:name=".learnQuiz"
             android:exported="false" />

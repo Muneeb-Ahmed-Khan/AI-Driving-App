@@ -102,10 +102,11 @@
             app:srcCompat="@drawable/chatbot2" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/askMeAnything"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
+            android:onClick="chatbot"
             android:layout_marginRight="50dp"
             android:background="@drawable/rounded_button"
             android:text="Ask me anything"

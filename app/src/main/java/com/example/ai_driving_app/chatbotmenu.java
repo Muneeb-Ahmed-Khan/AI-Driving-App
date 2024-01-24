@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 
 public class chatbotmenu extends AppCompatActivity {
@@ -16,6 +17,8 @@ public class chatbotmenu extends AppCompatActivity {
 
         ImageView profileIcon = findViewById(R.id.profileIcon);
         ImageView HomeIcon = findViewById(R.id.homePageIcon);
+        Button askMeAnything = findViewById(R.id.askMeAnything);
+
 
 
         profileIcon.setOnClickListener(view -> {
@@ -27,6 +30,12 @@ public class chatbotmenu extends AppCompatActivity {
             // Redirect the user to the home page of the application
             homepage();
         });
+
+        askMeAnything.setOnClickListener(view -> {
+            chatbot();
+        });
+
+
     }
 
     public void redirectToProfilePage() {
@@ -41,4 +50,11 @@ public class chatbotmenu extends AppCompatActivity {
         startActivity(intent);
 
     }
+
+    public void chatbot(){
+
+        Intent intent = new Intent(chatbotmenu.this, chatbot.class);
+        startActivity(intent);
+    }
+
 }
