@@ -10,29 +10,29 @@
       android:layout_height="wrap_content"
       android:padding="5dp"
       android:textColor="@android:color/black"
-      android:background="@color/red"
+      android:background="@drawable/rounded_bg_send"
       android:textSize="20sp"
-      android:minHeight="50dp"
+      android:minHeight="55dp"
       android:id="@+id/message_send"
       android:layout_marginBottom="20dp"
       android:layout_marginStart="80dp"
       >
 
-  </TextView>
+</TextView>
 
-  <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:padding="5dp"
-      android:minHeight="50dp"
-      android:textColor="@android:color/black"
-      android:background="@color/green"
-      android:layout_marginBottom="20dp"
-      android:textSize="20sp"
-      android:id="@+id/message_receive"
-      android:layout_marginEnd="80dp"
-      >
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:minHeight="50dp"
+    android:textColor="@android:color/black"
+    android:background="@drawable/rounded_bg_receive"
+    android:layout_marginBottom="20dp"
+    android:textSize="20sp"
+    android:id="@+id/message_receive"
+    android:layout_marginEnd="120dp"
+    >
 
-  </TextView>
+    </TextView>
 
-</LinearLayout>
+    </LinearLayout>
