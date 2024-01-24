@@ -40,7 +40,7 @@ public class chatbot extends AppCompatActivity implements BotReply{
     private SessionsClient sessionsClient;
     private SessionName sessionName;
     private String uuid = UUID.randomUUID().toString();
-    private String TAG = "mainactivity";
+    private String TAG = "CHATBOT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

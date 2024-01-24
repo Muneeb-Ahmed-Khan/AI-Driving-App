@@ -15,7 +15,7 @@ public class SendMessageInBg extends AsyncTask<Void, Void, DetectIntentResponse>
   private SessionName session;
   private SessionsClient sessionsClient;
   private QueryInput queryInput;
-  private String TAG = "async";
+  private String TAG = "CHATBOT";
   private BotReply botReply;
 
   public SendMessageInBg(BotReply botReply,SessionName session, SessionsClient sessionsClient,
@@ -24,11 +24,13 @@ public class SendMessageInBg extends AsyncTask<Void, Void, DetectIntentResponse>
     this.session = session;
     this.sessionsClient = sessionsClient;
     this.queryInput = queryInput;
+    Log.d(TAG, "doInBackground SendMessageInBg: " + queryInput);
   }
 
   @Override
   protected DetectIntentResponse doInBackground(Void... voids) {
     try {
+      Log.d(TAG, "doInBackground: " + queryInput);
       DetectIntentRequest detectIntentRequest =
           DetectIntentRequest.newBuilder()
               .setSession(session.toString())
@@ -36,7 +38,7 @@ public class SendMessageInBg extends AsyncTask<Void, Void, DetectIntentResponse>
               .build();
       return sessionsClient.detectIntent(detectIntentRequest);
     } catch (Exception e) {
-      Log.d(TAG, "doInBackground: " + e.getMessage());
+      Log.d(TAG, "doInBackground Exception: " + e.getMessage());
       e.printStackTrace();
     }
     return null;
