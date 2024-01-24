@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class chatbot extends AppCompatActivity {
+public class chatbot extends AppCompatActivity implements BotReply{
 
     RecyclerView chatView;
     ChatAdapter chatAdapter;
@@ -45,7 +45,7 @@ public class chatbot extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chatbot);
+        setContentView(R.layout.activity_chatbot);
         chatView = findViewById(R.id.chatView);
         editMessage = findViewById(R.id.editMessage);
         btnSend = findViewById(R.id.btnSend);
@@ -64,7 +64,7 @@ public class chatbot extends AppCompatActivity {
                     Objects.requireNonNull(chatView.getLayoutManager())
                             .scrollToPosition(messageList.size() - 1);
                 } else {
-                    Toast.makeText(MainActivity.this, "Please enter text!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(chatbot.this, "Please enter text!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -74,7 +74,7 @@ public class chatbot extends AppCompatActivity {
 
     private void setUpBot() {
         try {
-            InputStream stream = this.getResources().openRawResource(R.raw.credential);
+            InputStream stream = this.getResources().openRawResource(R.raw.credentials);
             GoogleCredentials credentials = GoogleCredentials.fromStream(stream)
                     .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
             String projectId = ((ServiceAccountCredentials) credentials).getProjectId();
