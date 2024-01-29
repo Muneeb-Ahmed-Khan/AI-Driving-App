@@ -160,10 +160,11 @@
         android:layout_marginBottom="358dp">
 
         <ImageView
-            android:id="@+id/imageView9"
+            android:id="@+id/roadGuard"
             android:background="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="onRoadGuardClick"
             app:srcCompat="@drawable/files" />
     </FrameLayout>
 

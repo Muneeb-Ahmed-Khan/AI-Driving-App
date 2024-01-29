@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView profileIcon = findViewById(R.id.profileIcon);
         ImageView bulbIcon = findViewById(R.id.learnQuizBulb);
         ImageView chatBotIcon = findViewById(R.id.chatBotIcon);
+        ImageView roadGuard = findViewById(R.id.roadGuard);
 
 
         profileIcon.setOnClickListener(view -> {
@@ -33,6 +34,13 @@ public class MainActivity extends AppCompatActivity {
             onChatBotIconClick();
 
         });
+
+        roadGuard.setOnClickListener(view ->{
+
+            // redirect to roadGuard
+            onRoadGuardClick();
+        });
+
     }
     public void redirectToProfilePage() {
 
@@ -52,6 +60,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void onRoadGuardClick(){
+
+        Intent intent = new Intent(MainActivity.this, roadGuard.class);
+        startActivity(intent);
+    }
 
     }
 
