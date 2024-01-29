@@ -33,6 +33,10 @@
             android:name=".learnQuiz"
             android:exported="false" />
         <activity
+            android:name=".DisplayImageActivity"
+            android:label="Display Image Activity">
+        </activity>
+        <activity
             android:name=".profile"
             android:exported="false" />
         <activity

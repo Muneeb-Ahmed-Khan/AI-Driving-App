@@ -3,6 +3,7 @@ package com.example.ai_driving_app;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -11,12 +12,15 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,8 +29,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Locale;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class roadGuard extends AppCompatActivity {
@@ -43,6 +52,8 @@ public class roadGuard extends AppCompatActivity {
     private HandlerThread backgroundThread;
     private Handler backgroundHandler;
 
+    private Button captureButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +61,9 @@ public class roadGuard extends AppCompatActivity {
 
         surfaceView = findViewById(R.id.previewView);
         surfaceView.getHolder().addCallback(surfaceCallback);
+
+        initViews();
+        setupCamera();
 
         // Check and request camera permission
         if (checkCameraPermission()) {
@@ -61,6 +75,43 @@ public class roadGuard extends AppCompatActivity {
         }
     }
 
+    private void initViews() {
+        surfaceView = findViewById(R.id.previewView);
+        captureButton = findViewById(R.id.captureButton);
+
+        // Set up capture button click listener
+        captureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                captureImage();
+            }
+        });
+    }
+
+    private void captureImage() {
+        // Implement logic to capture image and save to file
+        File imageFile = createImageFile();
+        // Pass the image file path to a new activity
+        displayCapturedImage(imageFile.getAbsolutePath());
+    }
+
+    private File createImageFile() {
+        try {
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+            String imageFileName = "JPEG_" + timeStamp + "_";
+            File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            return File.createTempFile(imageFileName, ".jpg", storageDir);
+        } catch (IOException e) {
+            Log.e(TAG, "Error creating image file: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private void displayCapturedImage(String imagePath) {
+        Intent intent = new Intent(this, DisplayImageActivity.class);
+        intent.putExtra("imagePath", imagePath);
+        startActivity(intent);
+    }
     private final SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
