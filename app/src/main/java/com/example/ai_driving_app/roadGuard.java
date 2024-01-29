@@ -1,10 +1,10 @@
 package com.example.ai_driving_app;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -19,12 +19,12 @@ public class roadGuard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_road_guard);
 
-        // Check for camera permission
+        // Check camera permission
         if (checkCameraPermission()) {
-            // Camera permission already granted, you can proceed with your camera-related code
-            // For example, initializing the camera or launching a camera preview
+            // Permission already granted
+            setupCamera();
         } else {
-            // Camera permission not granted, request the permission
+            // Request camera permission
             requestCameraPermission();
         }
     }
@@ -35,23 +35,31 @@ public class roadGuard extends AppCompatActivity {
     }
 
     private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(this,
+        ActivityCompat.requestPermissions(
+                this,
                 new String[]{Manifest.permission.CAMERA},
-                CAMERA_PERMISSION_REQUEST_CODE);
+                CAMERA_PERMISSION_REQUEST_CODE
+        );
     }
 
-    // Handle the result of the permission request
-    @SuppressLint("MissingSuperCall")
+    private void setupCamera() {
+        // Implement camera setup code here
+        // This is where you would open the camera, set up a preview, etc.
+        // You can use Camera API or Camera2 API depending on your needs.
+        // For simplicity, I'm not providing the camera setup code here.
+    }
+
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Camera permission granted, you can proceed with your camera-related code
-                // For example, initializing the camera or launching a camera preview
+                // Camera permission granted
+                setupCamera();
             } else {
-                // Camera permission denied, handle accordingly (e.g., show a message or disable camera features)
+                // Camera permission denied
+                Toast.makeText(this, "Camera permission is required for this app", Toast.LENGTH_SHORT).show();
+                // Handle permission denial gracefully (e.g., show a message or close the app)
             }
         }
     }
