@@ -15,7 +15,7 @@
 
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/captureButton"
         android:layout_width="146dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
