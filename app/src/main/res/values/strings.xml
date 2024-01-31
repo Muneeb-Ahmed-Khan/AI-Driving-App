@@ -42,4 +42,6 @@
     <string name="the_time_of_accident">THE TIME OF ACCIDENT</string>
     <string name="injuries_and_summary">INJURIES AND SUMMARY</string>
     <string name="submit_info">SUBMIT</string>
+    <string name="diplayingvapturedimage">diplayingVapturedImage</string>
+    <string name="capture">Capture</string>
 </resources>

@@ -39,15 +39,17 @@ public class DisplayImageActivity extends AppCompatActivity {
         // Initialize Firebase Authentication
         firebaseAuth = FirebaseAuth.getInstance();
 
-        // Retrieve image file path from the intent
+        // Get the image path from the intent
         String imagePath = getIntent().getStringExtra("imagePath");
 
         // Load the image into an ImageView
         ImageView imageView = findViewById(R.id.captureImage);
+        if (imagePath != null) {
         Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-        imageView.setImageBitmap(bitmap);
-
-
+        imageView.setImageBitmap(bitmap);}
+        else {
+            Toast.makeText(this, "Error displaying image", Toast.LENGTH_SHORT).show();
+        }
 
     }
 

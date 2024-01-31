@@ -1,5 +1,7 @@
 package com.example.ai_driving_app;
 
+import static android.view.SurfaceHolder.*;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -19,7 +21,6 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -32,27 +33,23 @@ import androidx.core.content.ContextCompat;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
+@SuppressLint("ObsoleteSdkInt")
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class roadGuard extends AppCompatActivity {
 
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
     private static final String TAG = "roadGuard";
 
-    private CameraManager cameraManager;
-    private String cameraId;
     private CameraDevice cameraDevice;
     private CameraCaptureSession cameraCaptureSession;
     private SurfaceView surfaceView;
 
     private HandlerThread backgroundThread;
     private Handler backgroundHandler;
-
-    private Button captureButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,27 +74,29 @@ public class roadGuard extends AppCompatActivity {
 
     private void initViews() {
         surfaceView = findViewById(R.id.previewView);
-        captureButton = findViewById(R.id.captureButton);
+        Button captureButton = findViewById(R.id.captureButton);
 
         // Set up capture button click listener
-        captureButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                captureImage();
-            }
-        });
+        captureButton.setOnClickListener(v -> captureImage());
     }
 
     private void captureImage() {
         // Implement logic to capture image and save to file
         File imageFile = createImageFile();
+
         // Pass the image file path to a new activity
-        displayCapturedImage(imageFile.getAbsolutePath());
+
+        if (imageFile != null) {
+
+            displayCapturedImage(imageFile.getAbsolutePath());
+        } else {
+            Toast.makeText(this, "Error capturing image", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private File createImageFile() {
         try {
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmm ss", Locale.getDefault()).format(new Date());
             String imageFileName = "JPEG_" + timeStamp + "_";
             File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             return File.createTempFile(imageFileName, ".jpg", storageDir);
@@ -106,16 +105,17 @@ public class roadGuard extends AppCompatActivity {
             return null;
         }
     }
-
     private void displayCapturedImage(String imagePath) {
-        Intent intent = new Intent(roadGuard.this, DisplayImageActivity.class);
+        Intent intent = new Intent(this, DisplayImageActivity.class);
         intent.putExtra("imagePath", imagePath);
         startActivity(intent);
     }
-    private final SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
+
+    private final Callback surfaceCallback = new Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
             // Surface is created or recreated
+            Log.d(TAG, "Surface created");
             if (checkCameraPermission()) {
                 // Permission already granted
                 setupCamera();
@@ -129,6 +129,7 @@ public class roadGuard extends AppCompatActivity {
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
             // Surface properties changed (e.g., size)
+            Log.d(TAG, "Surface changed");
             // Recreate camera session if needed
             recreateCameraSession();
         }
@@ -137,14 +138,17 @@ public class roadGuard extends AppCompatActivity {
             if (cameraCaptureSession != null) {
                 cameraCaptureSession.close();
                 cameraCaptureSession = null;
+                // Ensure no messages are sent to backgroundHandler after closing the session
+                backgroundHandler.removeCallbacksAndMessages(null);
                 setupCamera();  // Recreate the camera session
             }
         }
 
         @Override
         public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-            // Surface is destroyed
-            // Release camera resources if needed
+          // Surface is destroyed
+            Log.d(TAG, "Surface destroyed");
+            releaseCamera();
         }
     };
 
@@ -164,13 +168,29 @@ public class roadGuard extends AppCompatActivity {
 
     @SuppressLint("WrongViewCast")
     private void setupCamera() {
+        // Ensure that the SurfaceView is properly initialized
         surfaceView = findViewById(R.id.previewView);
+        SurfaceHolder surfaceHolder;
+        surfaceHolder = surfaceView.getHolder();
+        Log.d(TAG, "Surface validity in setupCamera: " + surfaceHolder.getSurface().isValid());
 
-        cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+
+        // Check if the surface is valid before proceeding
+        Surface surface = surfaceView.getHolder().getSurface();
+        surfaceHolder = surfaceView.getHolder();
+        if (surface == null || !surfaceHolder.getSurface().isValid()) {
+            Log.e(TAG, "Surface is not valid. Unable to setup camera.");
+
+            surfaceView.getHolder().removeCallback(surfaceCallback);
+            surfaceView.getHolder().addCallback(surfaceCallback);
+            return;
+        }
+
+        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
 
         try {
-            // Get the front camera ID. You can modify this if you want the rear camera.
-            cameraId = cameraManager.getCameraIdList()[0];
+            // Get the back camera ID.
+            String cameraId = cameraManager.getCameraIdList()[0];
 
             // Close the camera if it's already open
             if (cameraDevice != null) {
@@ -179,33 +199,31 @@ public class roadGuard extends AppCompatActivity {
             }
 
             // Open the camera
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     cameraManager.openCamera(cameraId, cameraStateCallback, backgroundHandler);
                 }
             }
 
-        }
-
-        catch (CameraAccessException e) {
+        } catch (CameraAccessException e) {
             Log.e(TAG, "Error accessing camera: " + e.getMessage());
         }
     }
+
 
     private final CameraDevice.StateCallback cameraStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
             // Camera opened successfully
+            Log.d(TAG, "Camera opened successfully");
             cameraDevice = camera;
-
-            // Create a preview session
             createCameraPreviewSession();
         }
 
         @Override
         public void onDisconnected(@NonNull CameraDevice camera) {
             // Handle camera disconnection
+            Log.d(TAG, "Camera disconnected");
             camera.close();
             cameraDevice = null;
         }
@@ -213,6 +231,7 @@ public class roadGuard extends AppCompatActivity {
         @Override
         public void onError(@NonNull CameraDevice camera, int error) {
             // Handle camera errors
+            Log.e(TAG, "Camera error: " + error);
             camera.close();
             cameraDevice = null;
         }
@@ -296,6 +315,7 @@ public class roadGuard extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         releaseCamera();
+        stopBackgroundThread();
     }
 
     private void releaseCamera() {
