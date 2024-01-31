@@ -37,4 +37,9 @@
     <string name="chatbot_icon">Chatbot Icon</string>
     <string name="submit">Submit</string>
     <string name="enter_your_address">Enter your address</string>
+    <string name="report_details">REPORT DETAILS</string>
+    <string name="the_incident">THE INCIDENT</string>
+    <string name="the_time_of_accident">THE TIME OF ACCIDENT</string>
+    <string name="injuries_and_summary">INJURIES AND SUMMARY</string>
+    <string name="submit_info">SUBMIT</string>
 </resources>

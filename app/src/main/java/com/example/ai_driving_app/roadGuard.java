@@ -108,7 +108,7 @@ public class roadGuard extends AppCompatActivity {
     }
 
     private void displayCapturedImage(String imagePath) {
-        Intent intent = new Intent(this, DisplayImageActivity.class);
+        Intent intent = new Intent(roadGuard.this, DisplayImageActivity.class);
         intent.putExtra("imagePath", imagePath);
         startActivity(intent);
     }

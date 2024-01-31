@@ -34,7 +34,8 @@
             android:exported="false" />
         <activity
             android:name=".DisplayImageActivity"
-            android:label="Display Image Activity">
+            android:label="Display Image Activity"
+            >
         </activity>
         <activity
             android:name=".profile"
