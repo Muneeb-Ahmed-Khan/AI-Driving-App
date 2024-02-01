@@ -96,7 +96,7 @@ public class roadGuard extends AppCompatActivity {
 
     private File createImageFile() {
         try {
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmm ss", Locale.getDefault()).format(new Date());
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
             String imageFileName = "JPEG_" + timeStamp + "_";
             File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             return File.createTempFile(imageFileName, ".jpg", storageDir);
@@ -116,14 +116,16 @@ public class roadGuard extends AppCompatActivity {
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
             // Surface is created or recreated
             Log.d(TAG, "Surface created");
-            if (checkCameraPermission()) {
-                // Permission already granted
-                setupCamera();
-            }
-            else {
-                // Request camera permission
-                requestCameraPermission();
-            }
+
+            runOnUiThread(() -> {
+                if (checkCameraPermission()) {
+                    // Permission already granted
+                    setupCamera();
+                } else {
+                    // Request camera permission
+                    requestCameraPermission();
+                }
+            });
         }
 
         @Override
@@ -131,7 +133,8 @@ public class roadGuard extends AppCompatActivity {
             // Surface properties changed (e.g., size)
             Log.d(TAG, "Surface changed");
             // Recreate camera session if needed
-            recreateCameraSession();
+            // Recreate camera session if needed
+            runOnUiThread(this::recreateCameraSession);
         }
 
         private void recreateCameraSession() {
@@ -148,7 +151,7 @@ public class roadGuard extends AppCompatActivity {
         public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
           // Surface is destroyed
             Log.d(TAG, "Surface destroyed");
-            releaseCamera();
+            runOnUiThread(() -> releaseCamera());
         }
     };
 

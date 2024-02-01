@@ -34,7 +34,7 @@ public class DisplayImageActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
 
         // Get a reference to the Firebase Realtime Database
-        databaseReference = FirebaseDatabase.getInstance().getReference("your_database_path");
+        databaseReference = FirebaseDatabase.getInstance().getReference("ai-driving-app");
 
         // Initialize Firebase Authentication
         firebaseAuth = FirebaseAuth.getInstance();
