@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,14 +16,24 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class DisplayImageActivity extends AppCompatActivity {
 
     public DatabaseReference databaseReference;
 
     public FirebaseAuth firebaseAuth;
+    FirebaseStorage storage;
+    StorageReference storageRef;
+    Uri imageUri;
+    Button submitBtn;
 
     private static final String TAG = "DisplayImageActivity";
 
@@ -37,7 +48,7 @@ public class DisplayImageActivity extends AppCompatActivity {
         // Load the image into an ImageView
         if (imagePath != null) {
             ImageView imageView = findViewById(R.id.captureImage);
-            Uri imageUri = Uri.parse(imagePath);
+            imageUri = Uri.parse(imagePath);
             imageView.setImageURI(imageUri);
         }
         else {
@@ -53,9 +64,51 @@ public class DisplayImageActivity extends AppCompatActivity {
 
         // Initialize Firebase Authentication
         firebaseAuth = FirebaseAuth.getInstance();
+
+        // Get storage reference.
+        // Initialize Firebase Storage
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+
+
+
+        // set on click listener for the button to capture a photo
+        // it calls a method which is implemented below
+        submitBtn = findViewById(R.id.incident_submit_btn);
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Handle button click event here
+                takePhoto(imageUri); // Replace with your desired functionality
+            }
+        });
+
     }
 
-    public void submitting(View view) {
+    public void takePhoto(Uri imageUri){
+
+        // Create a reference to the location where you want to upload the image
+        StorageReference imageRef = storageRef.child("images/" + UUID.randomUUID().toString());
+
+        // Upload the image
+        UploadTask uploadTask = imageRef.putFile(imageUri);
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
+                    // Image uploaded successfully, get the download URL
+                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        // Uri contains the download URL
+                        String imageUrl = uri.toString();
+                        // Now, you can store 'imageUrl' in Firebase or perform other actions
+                        submitting(imageUrl);
+
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    // Handle upload failures
+                });
+
+    }
+
+    public void submitting(String imageUrl) {
         try {
             // Retrieve entered information
             String incidentName = ((TextInputEditText) findViewById(R.id.incident_name)).getText().toString();
@@ -81,6 +134,8 @@ public class DisplayImageActivity extends AppCompatActivity {
                 incidentData.put("incidentSummary", incidentSummary);
                 incidentData.put("incidentTime", incidentTime);
                 incidentData.put("uid", uid); // Add the user's UID to the incident data
+                incidentData.put("incidentImageURL", imageUrl);
+
 
                 // Log data before pushing to Firebase (for debugging purposes)
                 Log.d("SubmitInfo", "Incident Data: " + incidentData.toString());
