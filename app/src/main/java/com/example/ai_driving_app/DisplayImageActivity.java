@@ -2,6 +2,7 @@ package com.example.ai_driving_app;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,12 +24,26 @@ public class DisplayImageActivity extends AppCompatActivity {
 
     public FirebaseAuth firebaseAuth;
 
-
+    private static final String TAG = "DisplayImageActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_image);
+
+        String imagePath = (getIntent().getExtras()).getString("imagePath");
+        Log.d(TAG, imagePath);
+
+        // Load the image into an ImageView
+        if (imagePath != null) {
+            ImageView imageView = findViewById(R.id.captureImage);
+            Uri imageUri = Uri.parse(imagePath);
+            imageView.setImageURI(imageUri);
+        }
+        else {
+            Toast.makeText(this, "Error displaying image", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Error displaying image");
+        }
 
         // Initialize Firebase
         FirebaseApp.initializeApp(this);
@@ -38,19 +53,6 @@ public class DisplayImageActivity extends AppCompatActivity {
 
         // Initialize Firebase Authentication
         firebaseAuth = FirebaseAuth.getInstance();
-
-        // Get the image path from the intent
-        String imagePath = getIntent().getStringExtra("imagePath");
-
-        // Load the image into an ImageView
-        ImageView imageView = findViewById(R.id.captureImage);
-        if (imagePath != null) {
-        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-        imageView.setImageBitmap(bitmap);}
-        else {
-            Toast.makeText(this, "Error displaying image", Toast.LENGTH_SHORT).show();
-        }
-
     }
 
     public void submitting(View view) {

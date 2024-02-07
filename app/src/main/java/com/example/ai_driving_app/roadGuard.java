@@ -2,6 +2,7 @@ package com.example.ai_driving_app;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -123,6 +124,10 @@ public class roadGuard extends AppCompatActivity {
                         String msg = "Photo capture succeeded: " + savedUri;
                         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                         Log.d(TAG, msg);
+
+                        Intent intent = new Intent(roadGuard.this, DisplayImageActivity.class);
+                        intent.putExtra("imagePath", savedUri.toString());
+                        startActivity(intent);
                     }
                 });
     }
