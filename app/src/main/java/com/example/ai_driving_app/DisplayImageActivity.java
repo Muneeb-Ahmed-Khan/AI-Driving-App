@@ -126,14 +126,14 @@ public class DisplayImageActivity extends AppCompatActivity {
 
             if (currentUser != null) {
                 // User is signed in, get the UID
-                String uid = currentUser.getUid();
+                String uid = currentUser.getEmail();
 
                 // Create a data object or map
                 Map<String, Object> incidentData = new HashMap<>();
                 incidentData.put("incidentName", incidentName);
                 incidentData.put("incidentSummary", incidentSummary);
                 incidentData.put("incidentTime", incidentTime);
-                incidentData.put("uid", uid); // Add the user's UID to the incident data
+                incidentData.put("email", uid); // Add the user's UID to the incident data
                 incidentData.put("incidentImageURL", imageUrl);
 
 
