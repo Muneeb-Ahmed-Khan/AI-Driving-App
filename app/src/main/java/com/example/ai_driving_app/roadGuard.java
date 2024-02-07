@@ -1,315 +1,212 @@
 package com.example.ai_driving_app;
 
-import static android.view.SurfaceHolder.*;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CaptureRequest;
-import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.util.Log;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.Camera;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-@SuppressLint("ObsoleteSdkInt")
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class roadGuard extends AppCompatActivity {
 
-    private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
-    private static final String TAG = "roadGuard";
+    private ImageCapture imageCapture;
+    private File outputDirectory;
+    private ExecutorService cameraExecutor;
 
-    private CameraDevice cameraDevice;
-    private CameraCaptureSession cameraCaptureSession;
-    private SurfaceView surfaceView;
+    private static final String TAG = "CameraXGFG";
+    private static final String FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
+    private static final int REQUEST_CODE_PERMISSIONS = 20;
+    private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
 
-    private HandlerThread backgroundThread;
-    private Handler backgroundHandler;
+    Button cameraCaptureButton;
 
+    @SuppressLint("MissingInflatedId")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_road_guard);
 
-        surfaceView = findViewById(R.id.previewView);
-        surfaceView.getHolder().addCallback(surfaceCallback);
+        // hide the action bar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
-        initViews();
-        setupCamera();
-
-        // Check and request camera permission
-        if (checkCameraPermission()) {
-            // Permission already granted
-            setupCamera();
+        // Check camera permissions, if all permissions granted
+        // start the camera, else ask for the permission
+        if (allPermissionsGranted()) {
+            startCamera();
         } else {
-            // Request camera permission
-            requestCameraPermission();
-        }
-    }
-
-    private void initViews() {
-        surfaceView = findViewById(R.id.previewView);
-        Button captureButton = findViewById(R.id.captureButton);
-
-        // Set up capture button click listener
-        captureButton.setOnClickListener(v -> captureImage());
-    }
-
-    private void captureImage() {
-        // Implement logic to capture image and save to file
-        File imageFile = createImageFile();
-
-        // Pass the image file path to a new activity
-
-        if (imageFile != null) {
-
-            displayCapturedImage(imageFile.getAbsolutePath());
-        } else {
-            Toast.makeText(this, "Error capturing image", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private File createImageFile() {
-        try {
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-            String imageFileName = "JPEG_" + timeStamp + "_";
-            File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-            return File.createTempFile(imageFileName, ".jpg", storageDir);
-        } catch (IOException e) {
-            Log.e(TAG, "Error creating image file: " + e.getMessage());
-            return null;
-        }
-    }
-    private void displayCapturedImage(String imagePath) {
-        Intent intent = new Intent(this, DisplayImageActivity.class);
-        intent.putExtra("imagePath", imagePath);
-        startActivity(intent);
-    }
-
-    private final Callback surfaceCallback = new Callback() {
-        @Override
-        public void surfaceCreated(@NonNull SurfaceHolder holder) {
-            // Surface is created or recreated
-            Log.d(TAG, "Surface created");
-
-            runOnUiThread(() -> {
-                if (checkCameraPermission()) {
-                    // Permission already granted
-                    setupCamera();
-                } else {
-                    // Request camera permission
-                    requestCameraPermission();
-                }
-            });
+            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
 
-        @Override
-        public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-            // Surface properties changed (e.g., size)
-            Log.d(TAG, "Surface changed");
-            // Recreate camera session if needed
-            // Recreate camera session if needed
-            runOnUiThread(this::recreateCameraSession);
-        }
+        cameraCaptureButton = findViewById(R.id.camera_capture_button);
 
-        private void recreateCameraSession() {
-            if (cameraCaptureSession != null) {
-                cameraCaptureSession.close();
-                cameraCaptureSession = null;
-                // Ensure no messages are sent to backgroundHandler after closing the session
-                backgroundHandler.removeCallbacksAndMessages(null);
-                setupCamera();  // Recreate the camera session
+
+        // set on click listener for the button to capture a photo
+        // it calls a method which is implemented below
+        cameraCaptureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Handle button click event here
+                takePhoto(); // Replace with your desired functionality
             }
-        }
+        });
 
-        @Override
-        public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-          // Surface is destroyed
-            Log.d(TAG, "Surface destroyed");
-            runOnUiThread(() -> releaseCamera());
-        }
-    };
-
-
-    private boolean checkCameraPermission() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED;
+        outputDirectory = getOutputDirectory();
+        cameraExecutor = Executors.newSingleThreadExecutor();
     }
 
-    private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(
-                this,
-                new String[]{Manifest.permission.CAMERA},
-                CAMERA_PERMISSION_REQUEST_CODE
-        );
-    }
-
-    @SuppressLint("WrongViewCast")
-    private void setupCamera() {
-        // Ensure that the SurfaceView is properly initialized
-        surfaceView = findViewById(R.id.previewView);
-        SurfaceHolder surfaceHolder;
-        surfaceHolder = surfaceView.getHolder();
-        Log.d(TAG, "Surface validity in setupCamera: " + surfaceHolder.getSurface().isValid());
-
-
-        // Check if the surface is valid before proceeding
-        Surface surface = surfaceView.getHolder().getSurface();
-        surfaceHolder = surfaceView.getHolder();
-        if (surface == null || !surfaceHolder.getSurface().isValid()) {
-            Log.e(TAG, "Surface is not valid. Unable to setup camera.");
-
-            surfaceView.getHolder().removeCallback(surfaceCallback);
-            surfaceView.getHolder().addCallback(surfaceCallback);
+    private void takePhoto() {
+        // Get a stable reference of the
+        // modifiable image capture use case
+        if (imageCapture == null) {
             return;
         }
 
-        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        // Create time-stamped output file to hold the image
+        File photoFile = new File(
+                outputDirectory,
+                new SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg"
+        );
 
-        try {
-            // Get the back camera ID.
-            String cameraId = cameraManager.getCameraIdList()[0];
+        // Create output options object which contains file + metadata
+        ImageCapture.OutputFileOptions outputOptions = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
 
-            // Close the camera if it's already open
-            if (cameraDevice != null) {
-                cameraDevice.close();
-                cameraDevice = null;
-            }
-
-            // Open the camera
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                    cameraManager.openCamera(cameraId, cameraStateCallback, backgroundHandler);
-                }
-            }
-
-        } catch (CameraAccessException e) {
-            Log.e(TAG, "Error accessing camera: " + e.getMessage());
-        }
-    }
-
-
-    private final CameraDevice.StateCallback cameraStateCallback = new CameraDevice.StateCallback() {
-        @Override
-        public void onOpened(@NonNull CameraDevice camera) {
-            // Camera opened successfully
-            Log.d(TAG, "Camera opened successfully");
-            cameraDevice = camera;
-            createCameraPreviewSession();
-        }
-
-        @Override
-        public void onDisconnected(@NonNull CameraDevice camera) {
-            // Handle camera disconnection
-            Log.d(TAG, "Camera disconnected");
-            camera.close();
-            cameraDevice = null;
-        }
-
-        @Override
-        public void onError(@NonNull CameraDevice camera, int error) {
-            // Handle camera errors
-            Log.e(TAG, "Camera error: " + error);
-            camera.close();
-            cameraDevice = null;
-        }
-    };
-
-    private void createCameraPreviewSession() {
-        try {
-            Surface surface = surfaceView.getHolder().getSurface();
-
-            // Check if the surface is still valid
-            if (surface.isValid()) {
-                // Create a CaptureRequest for preview
-                final CaptureRequest.Builder previewRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-                previewRequestBuilder.addTarget(surface);
-
-                // Create a CameraCaptureSession for preview
-                cameraDevice.createCaptureSession(Collections.singletonList(surface), new CameraCaptureSession.StateCallback() {
+        // Set up image capture listener,
+        // which is triggered after the photo has been taken
+        imageCapture.takePicture(
+                outputOptions,
+                ContextCompat.getMainExecutor(this),
+                new ImageCapture.OnImageSavedCallback() {
                     @Override
-                    public void onConfigured(@NonNull CameraCaptureSession session) {
-                        if (cameraDevice == null) {
-                            return;
-                        }
-
-                        // The camera is already closed
-                        cameraCaptureSession = session;
-
-                        // Start displaying the preview
-                        try {
-                            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-                            session.setRepeatingRequest(previewRequestBuilder.build(), null, backgroundHandler);
-                        } catch (CameraAccessException e) {
-                            Log.e(TAG, "Error starting camera preview: " + e.getMessage());
-                        }
+                    public void onError(@NonNull ImageCaptureException exc) {
+                        Log.e(TAG, "Photo capture failed: " + exc.getMessage(), exc);
                     }
 
                     @Override
-                    public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-                        Log.e(TAG, "Failed to configure camera session");
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
+                        Uri savedUri = Uri.fromFile(photoFile);
+
+                        // set the saved URI to the image view
+                        ImageView imageView = findViewById(R.id.iv_capture);
+                        imageView.setVisibility(View.VISIBLE);
+                        imageView.setImageURI(savedUri);
+
+                        String msg = "Photo capture succeeded: " + savedUri;
+                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                        Log.d(TAG, msg);
                     }
-                }, backgroundHandler);
-            } else {
-                Log.e(TAG, "Surface is not valid. Unable to create camera preview session.");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error creating camera preview session: " + e.getMessage());
-        }
+                });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        startBackgroundThread();
-    }
+    private void startCamera() {
 
-    @Override
-    protected void onPause() {
-        stopBackgroundThread();
-        super.onPause();
-    }
+        PreviewView previewView = findViewById(R.id.viewFinder);
 
-    private void startBackgroundThread() {
-        backgroundThread = new HandlerThread("CameraBackground");
-        backgroundThread.start();
-        backgroundHandler = new Handler(backgroundThread.getLooper());
-    }
+        ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
+                ProcessCameraProvider.getInstance(this);
 
-    private void stopBackgroundThread() {
-        if (backgroundThread != null) {
-            backgroundThread.quitSafely();
+        cameraProviderFuture.addListener(() -> {
             try {
-                backgroundThread.join();
-                backgroundThread = null;
-                backgroundHandler = null;
-            } catch (InterruptedException e) {
-                Log.e(TAG, "Error stopping background thread: " + e.getMessage());
+                // Camera provider is now guaranteed to be available
+                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+
+                // Set up the view finder use case to display camera preview
+                Preview preview = new Preview.Builder().build();
+
+                // Set up the capture use case to allow users to take photos
+                imageCapture = new ImageCapture.Builder()
+                        .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                        .build();
+
+                // Choose the camera by requiring a lens facing
+                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+
+                // Attach use cases to the camera with the same lifecycle owner
+                Camera camera = cameraProvider.bindToLifecycle(
+                        ((LifecycleOwner) this),
+                        cameraSelector,
+                        preview,
+                        imageCapture);
+
+                // Connect the preview use case to the previewView
+                preview.setSurfaceProvider(
+                        previewView.getSurfaceProvider());
+            } catch (InterruptedException | ExecutionException e) {
+                // Currently no exceptions thrown. cameraProviderFuture.get()
+                // shouldn't block since the listener is being called, so no need to
+                // handle InterruptedException.
+            }
+        }, ContextCompat.getMainExecutor(this));
+
+    }
+
+    private boolean allPermissionsGranted() {
+        return Arrays.stream(REQUIRED_PERMISSIONS)
+                .allMatch(permission -> ContextCompat.checkSelfPermission(getApplicationContext(), permission) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    // creates a folder inside internal storage
+    private File getOutputDirectory() {
+        File mediaDir = Arrays.stream(getExternalMediaDirs())
+                .filter(it -> it != null)
+                .findFirst()
+                .map(it -> new File(it, getResources().getString(R.string.app_name)))
+                .orElse(getFilesDir());
+
+        if (mediaDir != null && !mediaDir.exists()) {
+            mediaDir.mkdirs();
+        }
+        return mediaDir != null ? mediaDir : getFilesDir();
+    }
+
+    // checks the camera permission
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            // If all permissions granted, then start the camera
+            if (allPermissionsGranted()) {
+                startCamera();
+            } else {
+                // If permissions are not granted,
+                // present a toast to notify the user that
+                // the permissions were not granted.
+                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
+                finish();
             }
         }
     }
@@ -317,40 +214,6 @@ public class roadGuard extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        releaseCamera();
-        stopBackgroundThread();
-    }
-
-    private void releaseCamera() {
-        if (cameraCaptureSession != null) {
-            cameraCaptureSession.close();
-            cameraCaptureSession = null;
-        }
-
-        if (cameraDevice != null) {
-            cameraDevice.close();
-            cameraDevice = null;
-        }
-
-        if (surfaceView != null) {
-            surfaceView.getHolder().getSurface().release();
-        }
-
-        startBackgroundThread();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Camera permission granted
-                setupCamera();
-            } else {
-                // Camera permission denied
-                Toast.makeText(this, "Camera permission is required for this app", Toast.LENGTH_SHORT).show();
-                // Handle permission denial gracefully (e.g., show a message or close the app)
-            }
-        }
+        cameraExecutor.shutdown();
     }
 }

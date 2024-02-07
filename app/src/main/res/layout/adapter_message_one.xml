@@ -8,7 +8,7 @@
   <TextView
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:padding="5dp"
+      android:padding="10dp"
       android:textColor="@android:color/black"
       android:background="@drawable/rounded_bg_send"
       android:textSize="20sp"
@@ -23,7 +23,7 @@
 <TextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp"
+    android:padding="10dp"
     android:minHeight="50dp"
     android:textColor="@android:color/black"
     android:background="@drawable/rounded_bg_receive"
