@@ -3,40 +3,23 @@ package com.example.ai_driving_app.helpers;
 import android.os.AsyncTask;
 import android.util.Log;
 import com.example.ai_driving_app.interfaces.BotReply;
-import com.google.cloud.dialogflow.v2.DetectIntentRequest;
-import com.google.cloud.dialogflow.v2.DetectIntentResponse;
-import com.google.cloud.dialogflow.v2.QueryInput;
-import com.google.cloud.dialogflow.v2.SessionName;
-import com.google.cloud.dialogflow.v2.SessionsClient;
 
-public class SendMessageInBg extends AsyncTask<Void, Void, DetectIntentResponse> {
-
-
-  private SessionName session;
-  private SessionsClient sessionsClient;
-  private QueryInput queryInput;
+public class SendMessageInBg extends AsyncTask<Void, Void, String> {
+  private String queryInput;
   private String TAG = "CHATBOT";
   private BotReply botReply;
 
-  public SendMessageInBg(BotReply botReply,SessionName session, SessionsClient sessionsClient,
-      QueryInput queryInput) {
+  public SendMessageInBg(BotReply botReply, String queryInput) {
     this.botReply = botReply;
-    this.session = session;
-    this.sessionsClient = sessionsClient;
     this.queryInput = queryInput;
     Log.d(TAG, "doInBackground SendMessageInBg: " + queryInput);
   }
 
   @Override
-  protected DetectIntentResponse doInBackground(Void... voids) {
+  protected String doInBackground(Void... voids) {
     try {
       Log.d(TAG, "doInBackground: " + queryInput);
-      DetectIntentRequest detectIntentRequest =
-          DetectIntentRequest.newBuilder()
-              .setSession(session.toString())
-              .setQueryInput(queryInput)
-              .build();
-      return sessionsClient.detectIntent(detectIntentRequest);
+      return "This is static response.";
     } catch (Exception e) {
       Log.d(TAG, "doInBackground Exception: " + e.getMessage());
       e.printStackTrace();
@@ -45,7 +28,7 @@ public class SendMessageInBg extends AsyncTask<Void, Void, DetectIntentResponse>
   }
 
   @Override
-  protected void onPostExecute(DetectIntentResponse response) {
+  protected void onPostExecute(String response) {
     //handle return response here
     botReply.callback(response);
   }

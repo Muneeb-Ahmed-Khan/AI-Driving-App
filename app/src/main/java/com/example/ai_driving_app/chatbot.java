@@ -12,17 +12,6 @@ import com.example.ai_driving_app.adapters.ChatAdapter;
 import com.example.ai_driving_app.helpers.SendMessageInBg;
 import com.example.ai_driving_app.interfaces.BotReply;
 import com.example.ai_driving_app.models.Message;
-import com.google.api.gax.core.FixedCredentialsProvider;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.auth.oauth2.ServiceAccountCredentials;
-import com.google.cloud.dialogflow.v2.DetectIntentResponse;
-import com.google.cloud.dialogflow.v2.QueryInput;
-import com.google.cloud.dialogflow.v2.SessionName;
-import com.google.cloud.dialogflow.v2.SessionsClient;
-import com.google.cloud.dialogflow.v2.SessionsSettings;
-import com.google.cloud.dialogflow.v2.TextInput;
-import com.google.common.collect.Lists;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,13 +26,12 @@ public class chatbot extends AppCompatActivity implements BotReply{
     ImageButton btnSend;
 
     //dialogFlow
-    private SessionsClient sessionsClient;
-    private SessionName sessionName;
     private String uuid = UUID.randomUUID().toString();
     private String TAG = "CHATBOT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatbot);
         chatView = findViewById(R.id.chatView);
@@ -74,33 +62,20 @@ public class chatbot extends AppCompatActivity implements BotReply{
 
     private void setUpBot() {
         try {
-            InputStream stream = this.getResources().openRawResource(R.raw.credentials);
-            GoogleCredentials credentials = GoogleCredentials.fromStream(stream)
-                    .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
-            String projectId = ((ServiceAccountCredentials) credentials).getProjectId();
-
-            SessionsSettings.Builder settingsBuilder = SessionsSettings.newBuilder();
-            SessionsSettings sessionsSettings = settingsBuilder.setCredentialsProvider(
-                    FixedCredentialsProvider.create(credentials)).build();
-            sessionsClient = SessionsClient.create(sessionsSettings);
-            sessionName = SessionName.of(projectId, uuid);
-
-            Log.d(TAG, "projectId : " + projectId);
+            Log.d(TAG, "AAAA");
         } catch (Exception e) {
             Log.d(TAG, "setUpBot: " + e.getMessage());
         }
     }
 
     private void sendMessageToBot(String message) {
-        QueryInput input = QueryInput.newBuilder()
-                .setText(TextInput.newBuilder().setText(message).setLanguageCode("en-US")).build();
-        new SendMessageInBg(this, sessionName, sessionsClient, input).execute();
+        new SendMessageInBg(this, message).execute();
     }
 
     @Override
-    public void callback(DetectIntentResponse returnResponse) {
+    public void callback(String returnResponse) {
         if(returnResponse!=null) {
-            String botReply = returnResponse.getQueryResult().getFulfillmentText();
+            String botReply = returnResponse;
             if(!botReply.isEmpty()){
                 messageList.add(new Message(botReply, true));
                 chatAdapter.notifyDataSetChanged();
