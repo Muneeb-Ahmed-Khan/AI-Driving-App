@@ -78,6 +78,7 @@ public class DisplayImageActivity extends AppCompatActivity {
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                submitBtn.setEnabled(false);
                 // Handle button click event here
                 takePhoto(imageUri); // Replace with your desired functionality
             }
@@ -99,6 +100,8 @@ public class DisplayImageActivity extends AppCompatActivity {
                         String imageUrl = uri.toString();
                         // Now, you can store 'imageUrl' in Firebase or perform other actions
                         submitting(imageUrl);
+
+                        submitBtn.setEnabled(true);
 
                     });
                 })
