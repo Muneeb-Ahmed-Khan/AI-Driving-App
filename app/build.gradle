@@ -15,6 +15,12 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++11 -frtti -fexceptions"
+               arguments "-DOpenCV_DIR=" + opencvsdk + "/sdk/native/jni" // , "-DANDROID_ARM_NEON=TRUE"
+            }
+        }
     }
 
     buildTypes {
@@ -32,6 +38,12 @@ android {
     }
     packagingOptions {
         resources.excludes.add("META-INF/*")
+    }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
     }
 }
 
@@ -54,6 +66,7 @@ dependencies {
 
 
     implementation 'androidx.datastore:datastore-core-android:1.1.0-beta01'
+    implementation project(path: ':opencv')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
