@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView bulbIcon = findViewById(R.id.learnQuizBulb);
         ImageView chatBotIcon = findViewById(R.id.chatBotIcon);
         ImageView roadGuard = findViewById(R.id.roadGuard);
-
+        ImageView signDetectionOption = findViewById(R.id.signDetectionOption);
 
         profileIcon.setOnClickListener(view -> {
             // Perform the redirection to the profile page here
@@ -41,6 +41,12 @@ public class MainActivity extends AppCompatActivity {
             onRoadGuardClick();
         });
 
+        signDetectionOption.setOnClickListener(view -> {
+//            showSignDetectionOption();
+            Intent intent = new Intent(MainActivity.this, SignDetection.class);
+            startActivity(intent);
+
+        });
     }
     public void redirectToProfilePage() {
 

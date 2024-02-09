@@ -8,6 +8,7 @@
 #include <string>
 #include <opencv2/core.hpp>
 
+std::vector<std::string> processFrame(long matAddr);
 bool loadOnnxModel(std::string modelPath);
 
 #endif //AI_DRIVING_APP_CAMXSCANNER_H

@@ -36,6 +36,9 @@
 
 
         <activity
+            android:name=".SignDetection"
+            android:exported="false" />
+        <activity
             android:name=".chatbot"
             android:exported="false" />
         <activity
@@ -46,9 +49,7 @@
             android:exported="false" />
         <activity
             android:name=".DisplayImageActivity"
-            android:label="Display Image Activity"
-            >
-        </activity>
+            android:label="Display Image Activity" />
         <activity
             android:name=".profile"
             android:exported="false" />

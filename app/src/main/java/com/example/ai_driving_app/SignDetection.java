@@ -1,11 +1,14 @@
 package com.example.ai_driving_app;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,32 +31,38 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class roadGuard extends AppCompatActivity {
+public class SignDetection extends AppCompatActivity {
 
+    private static final String TAG = "CameraXGFG";
+    private static final int REQUEST_CODE_PERMISSIONS = 20;
+    private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
+    private PreviewView previewView;
     private ImageCapture imageCapture;
+    private ImageView imageView;
+    private Button cameraCaptureButton;
     private File outputDirectory;
     private ExecutorService cameraExecutor;
     private ProcessCameraProvider cameraProvider;
-    private static final String TAG = "CameraXGFG";
-    private static final String FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
-    private static final int REQUEST_CODE_PERMISSIONS = 20;
-    private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
+    private File outputFile;
 
-    Button cameraCaptureButton;
-
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_road_guard);
+        setContentView(R.layout.activity_sign_detection_picture_mode);
 
         // hide the action bar
         if (getSupportActionBar() != null) {
@@ -68,6 +77,8 @@ public class roadGuard extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
 
+        previewView = findViewById(R.id.previewView);
+        imageView = findViewById(R.id.imageView);
         cameraCaptureButton = findViewById(R.id.camera_capture_button);
 
 
@@ -81,7 +92,6 @@ public class roadGuard extends AppCompatActivity {
             }
         });
 
-        outputDirectory = getOutputDirectory();
         cameraExecutor = Executors.newSingleThreadExecutor();
     }
 
@@ -92,14 +102,9 @@ public class roadGuard extends AppCompatActivity {
             return;
         }
 
-        // Create time-stamped output file to hold the image
-        File photoFile = new File(
-                outputDirectory,
-                new SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg"
-        );
-
-        // Create output options object which contains file + metadata
-        ImageCapture.OutputFileOptions outputOptions = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
+        // Capture the image using ImageCapture
+        ImageCapture.OutputFileOptions outputOptions =
+                new ImageCapture.OutputFileOptions.Builder(createImageFile()).build();
 
         // Set up image capture listener,
         // which is triggered after the photo has been taken
@@ -114,22 +119,71 @@ public class roadGuard extends AppCompatActivity {
 
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
-                        Uri savedUri = Uri.fromFile(photoFile);
-
-                        String msg = "Photo capture succeeded: " + savedUri;
-//                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-                        Log.d(TAG, msg);
-
-                        Intent intent = new Intent(roadGuard.this, DisplayImageActivity.class);
-                        intent.putExtra("imagePath", savedUri.toString());
-                        startActivity(intent);
+                        showCapturedImage(output.getSavedUri());
                     }
                 });
     }
 
-    private void startCamera() {
+    private void showCapturedImage(Uri savedUri) {
+        // process the image from savedUri in Opencv
+        String hello = stringFromJNI();
+        Log.d(TAG, hello);
 
-        PreviewView previewView = findViewById(R.id.previewView);
+        // Display pure image untill processing is done.
+        imageView.setImageURI(savedUri);
+
+        // It will read it in BGR Mode.
+        Mat imageMat = Imgcodecs.imread(savedUri.getPath());
+
+        //Procesing
+        String[] labels = processFrameFromJNI(imageMat.getNativeObjAddr());
+        for(String label: labels){
+            Log.d(TAG, "Label Found: "  + label);
+        }
+
+        // Convert from BGR to RGB using Imgproc.COLOR_RGB2BGR, Android works on RGB
+        Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_BGR2RGB);
+
+        // Convert OpenCV Mat to Android Bitmap
+        Bitmap bitmap = Bitmap.createBitmap(imageMat.cols(), imageMat.rows(), Bitmap.Config.ARGB_8888);
+        org.opencv.android.Utils.matToBitmap(imageMat, bitmap);
+
+        // Display the Bitmap in the ImageView
+        imageView.setImageBitmap(bitmap);
+
+        // Release the Mat when done
+        imageMat.release();
+
+        // Display the processed image in the ImageView
+        // imageView.setImageURI(savedUri);
+        showImagePreview();
+    }
+
+    private File createImageFile() {
+        // Create a unique file name using a timestamp
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+
+        // Get the external storage directory
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (storageDir == null) {
+            return null;
+        }
+
+        // Create the image file
+        try {
+            File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
+            // Save the file path for later use
+//            currentImagePath = imageFile.getAbsolutePath();
+            return imageFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    private void startCamera() {
 
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
                 ProcessCameraProvider.getInstance(this);
@@ -169,23 +223,10 @@ public class roadGuard extends AppCompatActivity {
 
     }
 
+
     private boolean allPermissionsGranted() {
         return Arrays.stream(REQUIRED_PERMISSIONS)
                 .allMatch(permission -> ContextCompat.checkSelfPermission(getApplicationContext(), permission) == PackageManager.PERMISSION_GRANTED);
-    }
-
-    // creates a folder inside internal storage
-    private File getOutputDirectory() {
-        File mediaDir = Arrays.stream(getExternalMediaDirs())
-                .filter(it -> it != null)
-                .findFirst()
-                .map(it -> new File(it, getResources().getString(R.string.app_name)))
-                .orElse(getFilesDir());
-
-        if (mediaDir != null && !mediaDir.exists()) {
-            mediaDir.mkdirs();
-        }
-        return mediaDir != null ? mediaDir : getFilesDir();
     }
 
     // checks the camera permission
@@ -226,4 +267,33 @@ public class roadGuard extends AppCompatActivity {
         super.onDestroy();
         releaseCamera();
     }
+
+
+    @Override
+    public void onBackPressed() {
+        // Check if ImageView is visible
+        if (imageView.getVisibility() == View.VISIBLE) {
+            // If ImageView is visible, hide it and show camera preview
+            showCameraPreview();
+        } else {
+            // If ImageView is not visible, perform the default back button behavior
+            super.onBackPressed();
+        }
+    }
+
+    private void showCameraPreview() {
+        imageView.setVisibility(View.GONE);
+        previewView.setVisibility(View.VISIBLE);
+        cameraCaptureButton.setVisibility(View.VISIBLE);
+    }
+
+    private void showImagePreview() {
+        // Show the ImageView and hide the PreviewView
+        imageView.setVisibility(View.VISIBLE);
+        previewView.setVisibility(View.GONE);
+        cameraCaptureButton.setVisibility(View.GONE);
+    }
+
+    public native String stringFromJNI();
+    private native String[] processFrameFromJNI(long mat);
 }

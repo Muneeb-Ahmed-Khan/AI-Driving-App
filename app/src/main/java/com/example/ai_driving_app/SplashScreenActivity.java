@@ -8,6 +8,8 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.opencv.android.OpenCVLoader;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,6 +30,14 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splashscreen);
+
+        if(OpenCVLoader.initLocal()){
+            Log.d(OPENCV_LOG, "OPENCV JAVA Loaded Successfully.");
+            loadOnnxModel(this.getFilesDir().getAbsolutePath() + "/best.onnx");
+        }
+        else{
+            Log.d(OPENCV_LOG, "OPENCV JAVA ---- DİD NOT LOAD");
+        }
 
         String hello = stringFromJNI();
         Log.d(OPENCV_LOG, hello);
@@ -78,4 +88,5 @@ public class SplashScreenActivity extends AppCompatActivity {
      * which is packaged with this application.
      */
     public native String stringFromJNI();
+    public native boolean loadOnnxModel(String modelPath);
 }

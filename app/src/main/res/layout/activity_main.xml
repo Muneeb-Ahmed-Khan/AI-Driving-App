@@ -128,7 +128,7 @@
         tools:ignore="ExtraText">
 
         <ImageView
-            android:id="@+id/imageView6"
+            android:id="@+id/signDetectionOption"
             android:background="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
