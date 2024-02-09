@@ -22,8 +22,7 @@ Java_com_example_ai_1driving_1app_SignDetection_stringFromJNI(JNIEnv *env, jobje
 
 extern "C"
 JNIEXPORT jobjectArray JNICALL
-Java_com_example_ai_1driving_1app_SignDetection_processFrameFromJNI(JNIEnv *env, jobject thiz,
-                                                                    jlong mat) {
+Java_com_example_ai_1driving_1app_SignDetection_processFrameFromJNI(JNIEnv *env, jobject thiz, jlong mat) {
     clock_t begin = clock();
 
     std::vector<std::string> labels = processFrame(mat);
@@ -49,9 +48,31 @@ Java_com_example_ai_1driving_1app_SignDetection_processFrameFromJNI(JNIEnv *env,
 
 
 extern "C"
+JNIEXPORT jobjectArray JNICALL
+Java_com_example_ai_1driving_1app_SignDetectionDriveMode_processFrameFromJNI(JNIEnv *env, jobject thiz, jlong mat) {
+
+    std::vector<std::string> labels = processFrame(mat);
+
+    // Create a Java String array
+    jobjectArray result = env->NewObjectArray(labels.size(), env->FindClass("java/lang/String"), nullptr);
+
+    for (size_t i = 0; i < labels.size(); ++i) {
+        // Convert each C++ string to a Java string
+        jstring javaString = env->NewStringUTF(labels[i].c_str());
+
+        // Set the Java string in the array
+        env->SetObjectArrayElement(result, i, javaString);
+
+        // Don't forget to delete the local reference to avoid memory leaks
+        env->DeleteLocalRef(javaString);
+    }
+
+    return result;
+}
+
+extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_example_ai_1driving_1app_SplashScreenActivity_loadOnnxModel(JNIEnv *env, jobject thiz,
-                                                                     jstring model_path) {
+Java_com_example_ai_1driving_1app_SplashScreenActivity_loadOnnxModel(JNIEnv *env, jobject thiz, jstring model_path) {
     clock_t begin = clock();
     const char *str = env->GetStringUTFChars(model_path, nullptr);
     if (str == nullptr) {

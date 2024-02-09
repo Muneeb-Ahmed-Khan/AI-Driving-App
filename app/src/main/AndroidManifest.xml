@@ -39,6 +39,9 @@
             android:name=".SignDetection"
             android:exported="false" />
         <activity
+            android:name=".SignDetectionDriveMode"
+            android:exported="false" />
+        <activity
             android:name=".chatbot"
             android:exported="false" />
         <activity
