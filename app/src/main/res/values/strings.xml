@@ -45,4 +45,7 @@
     <string name="diplayingvapturedimage">diplayingVapturedImage</string>
     <string name="capture">Capture</string>
     <string name="splashscreeninit">TODO</string>
+    <string name="sign_detection_menu">Sign Detection Menu</string>
+    <string name="driver_mode">Driver Mode</string>
+    <string name="picture_mode">Picture Mode</string>
 </resources>

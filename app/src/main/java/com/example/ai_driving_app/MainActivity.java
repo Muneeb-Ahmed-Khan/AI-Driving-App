@@ -43,8 +43,11 @@ public class MainActivity extends AppCompatActivity {
 
         signDetectionOption.setOnClickListener(view -> {
 //            showSignDetectionOption();
-            Intent intent = new Intent(MainActivity.this, SignDetectionDriveMode.class);
-            startActivity(intent);
+//            Intent intent = new Intent(MainActivity.this, SignDetectionDriveMode.class);
+//            startActivity(intent);
+
+              Intent intent = new Intent(MainActivity.this, SignDetectionMenu.class);
+              startActivity(intent);
 
         });
     }
