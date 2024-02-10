@@ -34,7 +34,6 @@ public class nearByDrivingSchool extends AppCompatActivity implements OnMapReady
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private FusedLocationProviderClient fusedLocationProviderClient;
-
     private PlacesClient placesClient;
     private String placeId;
 
@@ -128,6 +127,11 @@ public class nearByDrivingSchool extends AppCompatActivity implements OnMapReady
 
                 // Move the camera to the user's location
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+
+                // Zoom into the user's location
+                float zoomLevel = 15.0f; // You can adjust the zoom level as needed
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, zoomLevel));
+
             });
         }
     }

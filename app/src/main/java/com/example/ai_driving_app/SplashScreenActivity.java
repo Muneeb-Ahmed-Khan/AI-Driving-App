@@ -2,11 +2,18 @@ package com.example.ai_driving_app;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import org.opencv.android.OpenCVLoader;
 
@@ -14,6 +21,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+
 
 @SuppressLint("CustomSplashScreen")
 public class SplashScreenActivity extends AppCompatActivity {
@@ -26,10 +35,36 @@ public class SplashScreenActivity extends AppCompatActivity {
        System.loadLibrary("ai_driving_app");
     }
 
+    private static final int REQUEST_CODE_PERMISSIONS = 1;
+
+    private static String[] storage_permissions = {
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+    };
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    public static String[] storage_permissions_33 = {
+            android.Manifest.permission.READ_MEDIA_IMAGES,
+            android.Manifest.permission.READ_MEDIA_AUDIO,
+            android.Manifest.permission.READ_MEDIA_VIDEO
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splashscreen);
+
+        if (allPermissionsGranted()) {
+            initializeOpenCV();
+        } else {
+            ActivityCompat.requestPermissions(this, permissions(), REQUEST_CODE_PERMISSIONS);
+        }
+    }
+
+    void initializeOpenCV(){
+
+        SaveDNNModel("best.onnx");
 
         if(OpenCVLoader.initLocal()){
             Log.d(OPENCV_LOG, "OPENCV JAVA Loaded Successfully.");
@@ -42,8 +77,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         String hello = stringFromJNI();
         Log.d(OPENCV_LOG, hello);
 
-        SaveDNNModel("best.onnx");
-
         // Use a Handler to delay the opening of the main activity
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -55,7 +88,6 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
         }, SPLASH_TIMEOUT);
     }
-
     void SaveDNNModel(String filename){
         File modelfile = new File(this.getFilesDir(), filename);
         Log.d(OPENCV_LOG, "************* File Loading ************");
@@ -80,6 +112,44 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
         catch (IOException e){
             e.printStackTrace();
+        }
+    }
+
+    public static String[] permissions() {
+        String[] p;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            p = storage_permissions_33;
+        } else {
+            p = storage_permissions;
+        }
+        return p;
+    }
+
+    private boolean allPermissionsGranted() {
+        return Arrays.stream(permissions())
+                .allMatch(permission -> ContextCompat.checkSelfPermission(getApplicationContext(), permission) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    // checks the camera permission
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            // If all permissions granted, then start the camera
+            if (allPermissionsGranted()) {
+                initializeOpenCV();
+            } else {
+                // If permissions are not granted,
+                // present a toast to notify the user that
+                // the permissions were not granted.
+                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
 
