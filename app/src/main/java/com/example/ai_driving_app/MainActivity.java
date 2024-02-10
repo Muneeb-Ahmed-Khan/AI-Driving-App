@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView chatBotIcon = findViewById(R.id.chatBotIcon);
         ImageView roadGuard = findViewById(R.id.roadGuard);
         ImageView signDetectionOption = findViewById(R.id.signDetectionOption);
-
+        ImageView nearByDrivingSchool = findViewById(R.id.nearby_driving_school);
         profileIcon.setOnClickListener(view -> {
             // Perform the redirection to the profile page here
             redirectToProfilePage();
@@ -41,11 +41,17 @@ public class MainActivity extends AppCompatActivity {
             onRoadGuardClick();
         });
 
-        signDetectionOption.setOnClickListener(view -> {
-//            showSignDetectionOption();
-//            Intent intent = new Intent(MainActivity.this, SignDetectionDriveMode.class);
-//            startActivity(intent);
+        nearByDrivingSchool.setOnClickListener(view ->{
 
+            // redirect to nearby driving schools on google maps
+
+            Intent intent = new Intent(MainActivity.this, com.example.ai_driving_app.nearByDrivingSchool.class);
+            startActivity(intent);
+
+
+        });
+
+        signDetectionOption.setOnClickListener(view -> {
               Intent intent = new Intent(MainActivity.this, SignDetectionMenu.class);
               startActivity(intent);
 
