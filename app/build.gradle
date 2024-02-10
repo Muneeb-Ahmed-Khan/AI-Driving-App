@@ -64,6 +64,9 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
 
+    // Maps SDK for Android
+    implementation 'com.google.android.gms:play-services-location:21.1.0'
+    implementation 'com.google.android.gms:play-services-maps:18.2.0'
 
     implementation 'androidx.datastore:datastore-core-android:1.1.0-beta01'
     implementation project(path: ':opencv')
