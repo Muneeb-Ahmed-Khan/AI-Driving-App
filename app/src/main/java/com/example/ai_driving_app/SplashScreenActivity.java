@@ -41,8 +41,6 @@ public class SplashScreenActivity extends AppCompatActivity {
     private static String[] storage_permissions = {
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
             android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE
     };
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
