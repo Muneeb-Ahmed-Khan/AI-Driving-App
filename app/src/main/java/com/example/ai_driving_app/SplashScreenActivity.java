@@ -1,5 +1,6 @@
 package com.example.ai_driving_app;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -38,12 +39,16 @@ public class SplashScreenActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_PERMISSIONS = 1;
 
     private static String[] storage_permissions = {
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
             android.Manifest.permission.READ_EXTERNAL_STORAGE
     };
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public static String[] storage_permissions_33 = {
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.READ_MEDIA_IMAGES,
             android.Manifest.permission.READ_MEDIA_AUDIO,
             android.Manifest.permission.READ_MEDIA_VIDEO

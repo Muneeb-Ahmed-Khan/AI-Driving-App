@@ -34,8 +34,11 @@ public class nearByDrivingSchool extends AppCompatActivity implements OnMapReady
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private FusedLocationProviderClient fusedLocationProviderClient;
+
     private PlacesClient placesClient;
     private String placeId;
+    SupportMapFragment mapFragment;
+    private static final String TAG = "LOCATION";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +46,13 @@ public class nearByDrivingSchool extends AppCompatActivity implements OnMapReady
         setContentView(R.layout.activity_near_by_driving_school);
 
         // Initialize the Places API
-        Places.initialize(getApplicationContext(), "AIzaSyApNmCXozIArXpPT-9Huai2oR9ziB9Vilk");
+        Places.initialize(getApplicationContext(), "AIzaSyD5QdIiBcHYhVunbhYlqUWO2cUI5sapSh8");
         placesClient = Places.createClient(this);
 
 
         // Initialize the map fragment
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.googleMap);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.googleMap);
+
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
@@ -59,20 +62,21 @@ public class nearByDrivingSchool extends AppCompatActivity implements OnMapReady
         // Check and request location permissions
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.d("LocationPermission", "Location permission not granted. Requesting...");
+            Log.d(TAG, "Location permission not granted. Requesting...");
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         } else {
-            Log.d("LocationPermission", "Location permission already granted. Requesting location updates...");
+            Log.d(TAG, "Location permission already granted. Requesting location updates...");
             // Permission already granted, request location updates
-            requestLocationUpdates();
+
         }
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        Log.d("MapReady", "Google Map is ready.");
+        Log.d(TAG, "Google Map is ready.");
+        requestLocationUpdates();
         // Map is ready, no need for further initialization here
     }
 
@@ -90,20 +94,20 @@ public class nearByDrivingSchool extends AppCompatActivity implements OnMapReady
                             double currentLatitude = location.getLatitude();
                             double currentLongitude = location.getLongitude();
 
-                            Log.d("LocationUpdates", "Location received. Latitude: " + currentLatitude + ", Longitude: " + currentLongitude);
+                            Log.d(TAG, "Location received. Latitude: " + currentLatitude + ", Longitude: " + currentLongitude);
 
                             // Display the current location on the map
                             LatLng currentLocation = new LatLng(currentLatitude, currentLongitude);
                             updateMapWithLocation(currentLocation);
                         } else {
-                            Log.e("LocationUpdates", "Last known location is null.");
+                            Log.e(TAG, "Last known location is null.");
                             // Handle the case where getLastLocation() returns null
                             // You may want to request location updates using a different method
                             // or inform the user that the location is not available
                         }
                     })
                     .addOnFailureListener(this, e -> {
-                        Log.e("LocationUpdates", "Failed to get last known location: " + e.getMessage());
+                        Log.e(TAG, "Failed to get last known location: " + e.getMessage());
                         // Handle failure to get last known location
                         // You may want to request location updates using a different method
                         // or inform the user that the location is not available
@@ -113,33 +117,25 @@ public class nearByDrivingSchool extends AppCompatActivity implements OnMapReady
 
 
     private void updateMapWithLocation(LatLng location) {
-        Log.d("UpdateMap", "Updating map with location...");
-        // Update the map with the current location
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.googleMap);
+        Log.d(TAG, "Updating map with location...");
 
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(googleMap -> {
-                // Add a marker for the user's location
-                googleMap.addMarker(new MarkerOptions().position(location).title("Your Location"));
+        mapFragment.getMapAsync(googleMap -> {
+            // Add a marker for the user's location
+            googleMap.addMarker(new MarkerOptions().position(location).title("Your Location"));
 
-                // Request and add markers for nearby places
-                requestNearbyPlaces(googleMap, location);
+            // Request and add markers for nearby places
+            requestNearbyPlaces(googleMap, location);
 
-                // Move the camera to the user's location
-                googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+            // Move the camera to the user's location
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+        });
 
-                // Zoom into the user's location
-                float zoomLevel = 15.0f; // You can adjust the zoom level as needed
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, zoomLevel));
-
-            });
-        }
     }
 
     private void requestNearbyPlaces(GoogleMap googleMap, LatLng location) {
-        Log.d("NearbyPlaces", "Requesting nearby places...");
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG);
+        Log.d(TAG, "Requesting nearby places...");
 
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG);
         FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -150,11 +146,14 @@ public class nearByDrivingSchool extends AppCompatActivity implements OnMapReady
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            Log.d(TAG, "Permission(s) error.");
             return;
         }
+
         placesClient.findCurrentPlace(request).addOnSuccessListener((response) -> {
             List<PlaceLikelihood> placeLikelihoods = response.getPlaceLikelihoods();
 
+            Log.d(TAG, "Places response recieved.");
             // Add markers for nearby places
             for (PlaceLikelihood placeLikelihood : placeLikelihoods) {
                 Place place = placeLikelihood.getPlace();
@@ -169,6 +168,7 @@ public class nearByDrivingSchool extends AppCompatActivity implements OnMapReady
             }
         }).addOnFailureListener((exception) -> {
             // Handle failure
+            Log.d(TAG, "Exception: " + exception.getMessage());
         });
     }
 
