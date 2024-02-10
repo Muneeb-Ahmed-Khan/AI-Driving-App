@@ -20,12 +20,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.maps.android.SphericalUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -150,22 +153,60 @@ public class nearByDrivingSchool extends AppCompatActivity implements OnMapReady
             return;
         }
 
-        placesClient.findCurrentPlace(request).addOnSuccessListener((response) -> {
-            List<PlaceLikelihood> placeLikelihoods = response.getPlaceLikelihoods();
+        // Calculate bounds for a 40km radius around the location
+        double radiusInMeters = 40000; // 40 kilometers
+        LatLngBounds bounds = new LatLngBounds.Builder()
+                .include(SphericalUtil.computeOffset(location, radiusInMeters, 0))
+                .include(SphericalUtil.computeOffset(location, radiusInMeters, 90))
+                .build();
+
+        // Create a FindAutocompletePredictionsRequest to get place predictions
+        FindAutocompletePredictionsRequest predictionsRequest = FindAutocompletePredictionsRequest.builder()
+                .setQuery("driving school")
+                .setLocationRestriction(RectangularBounds.newInstance(bounds))
+                .build();
+
+
+        placesClient.findAutocompletePredictions(predictionsRequest).addOnSuccessListener((response) -> {
+            List<AutocompletePrediction> predictions = response.getAutocompletePredictions();
 
             Log.d(TAG, "Places response recieved.");
-            // Add markers for nearby places
-            for (PlaceLikelihood placeLikelihood : placeLikelihoods) {
-                Place place = placeLikelihood.getPlace();
-                LatLng placeLocation = place.getLatLng();
 
-                if (placeLocation != null) {
-                    googleMap.addMarker(new MarkerOptions()
-                            .position(placeLocation)
-                            .title(place.getName())
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))); // Marker color
+            if (!predictions.isEmpty()) {
+                for (AutocompletePrediction prediction : predictions) {
+                        // Create a FetchPlaceRequest using the place ID obtained from the prediction
+                        FetchPlaceRequest fetchPlaceRequest = FetchPlaceRequest.builder(prediction.getPlaceId(), placeFields).build();
+
+                        // Perform the fetch request to get details of the place
+                        placesClient.fetchPlace(fetchPlaceRequest)
+                            .addOnSuccessListener((placeResponse) -> {
+                                Place place = placeResponse.getPlace();
+                                LatLng placeLocation = place.getLatLng();
+
+
+                                if (placeLocation != null) {
+                                    Log.d(TAG, placeLocation.toString());
+                                    googleMap.addMarker(new MarkerOptions()
+                                            .position(placeLocation)
+                                            .title(place.getName())
+                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))); // Marker color
+                                }
+                                else{
+                                    Log.d(TAG, "Requested Place is NULL");
+                                }
+                            })
+                            .addOnFailureListener((exception) -> {
+                                // Handle failure
+                                Log.d(TAG, "FetchPlaceRequest Exception: " + exception.getMessage());
+                            });
                 }
             }
+            else{
+                Log.d(TAG, "Places response empty.");
+            }
+
+
+
         }).addOnFailureListener((exception) -> {
             // Handle failure
             Log.d(TAG, "Exception: " + exception.getMessage());
