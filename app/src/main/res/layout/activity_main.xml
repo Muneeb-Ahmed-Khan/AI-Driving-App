@@ -12,7 +12,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="#d1d4d9">
+        android:elevation="5dp"
+        android:background="@drawable/mainactivity_bottom_menu">
 
         <!-- Left side: Welcome message -->
         <TextView
@@ -43,11 +44,12 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="38dp"
+        android:layout_marginStart="36dp"
         android:layout_marginTop="30dp"
-        android:layout_marginEnd="37dp"
-        android:layout_marginBottom="493dp"
-        android:background="#E2EcEB"
+        android:layout_marginEnd="39dp"
+        android:elevation="40dp"
+        android:layout_marginBottom="489dp"
+        android:background="@drawable/mainactivity_bulb_layout"
         android:orientation="horizontal">
 
         <!-- First TextView for "NEWS!" with bold font -->
@@ -59,6 +61,7 @@
             android:layout_height="wrap_content"
             android:text="@string/news"
             android:textColor="#000000"
+            android:paddingLeft="10dp"
             android:textSize="30sp"
             android:textStyle="bold" />
 
@@ -73,11 +76,12 @@
             android:textColor="#000000" />
 
         <TextView
-            android:layout_width="394dp"
+            android:layout_width="447dp"
             android:layout_height="30dp"
             android:layout_gravity="end|bottom"
             android:layout_marginTop="2dp"
-            android:padding="4dp"
+
+            android:paddingRight="4dp"
             android:text="@string/posted_number_of_hours_ago"
             android:textColor="#0000FF" />
     </LinearLayout>
@@ -89,7 +93,8 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="39dp"
         android:layout_marginBottom="180dp"
-        android:background="@color/white">
+
+        android:background="@drawable/mainactivity_bulb_layout">
 
         <ImageView
             android:id="@+id/learnQuizBulb"
@@ -97,10 +102,9 @@
             android:layout_height="171dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.371"
+            app:layout_constraintHorizontal_bias="0.372"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.454"
             app:srcCompat="@drawable/bulb" />
 
 
@@ -129,10 +133,13 @@
 
         <ImageView
             android:id="@+id/signDetectionOption"
-            android:background="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/stopsign" /> />
+            android:elevation="10dp"
+            android:background="@drawable/mainactivity_bulb_layout"
+            app:srcCompat="@drawable/stopsign"
+            android:contentDescription="TODO" />
+        />
     </FrameLayout>
 
     <FrameLayout
@@ -145,8 +152,9 @@
 
         <ImageView
             android:id="@+id/nearby_driving_school"
-            android:background="@color/white"
+            android:background="@drawable/mainactivity_bulb_layout"
             android:layout_width="wrap_content"
+            android:elevation="10dp"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/map" />
     </FrameLayout>
@@ -161,9 +169,10 @@
 
         <ImageView
             android:id="@+id/roadGuard"
-            android:background="@color/white"
+            android:background="@drawable/mainactivity_bulb_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:elevation="10dp"
             android:onClick="onRoadGuardClick"
             app:srcCompat="@drawable/files" />
     </FrameLayout>
@@ -173,7 +182,9 @@
         android:layout_height="75dp"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:background="#d1d4d9">
+        android:background="@drawable/mainactivity_bottom_menu"
+        android:layout_gravity="center"
+        android:elevation="20dp">
 
         <!-- Home Icon -->
         <ImageView

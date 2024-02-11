@@ -3,6 +3,7 @@ package com.example.ai_driving_app;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -68,23 +69,40 @@ public class Quiz extends AppCompatActivity {
 
                 if (selectedOptionIndex == correctAnswers[currentQuestionIndex]) {
                     correctCount++;
+                    showToast("Correct Answer");
                     selectedRadioButton.setTextColor(Color.GREEN);
                 } else {
+                    showToast("Wrong Answer");
                     selectedRadioButton.setTextColor(Color.RED);
                 }
 
-                if (currentQuestionIndex < questions.length - 1) {
-                    currentQuestionIndex++;
-                    displayQuestion();
-                } else {
-                    // End of the quiz
-                    displayResult();
-                }
+                // Pause for 2 seconds before moving to the next question
+                submitButton.setEnabled(false);
+                optionsRadioGroup.setEnabled(false);
+
+                new Handler().postDelayed(() -> {
+                    if (currentQuestionIndex < questions.length - 1) {
+                        currentQuestionIndex++;
+                        displayQuestion();
+                        submitButton.setEnabled(true);
+                        optionsRadioGroup.setEnabled(true);
+                    } else {
+                        // End of the quiz
+                        displayResult();
+                    }
+                }, 2000);
             } else {
                 Toast.makeText(Quiz.this, "Please select an option", Toast.LENGTH_SHORT).show();
             }
         });
+
+
+
     }
+     private void showToast(String message) {
+        Toast.makeText(Quiz.this, message, Toast.LENGTH_SHORT).show();
+    }
+
 
     private void displayQuestion() {
         questionTextView.setText(questions[currentQuestionIndex]);

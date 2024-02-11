@@ -50,4 +50,5 @@
     <string name="picture_mode">Picture Mode</string>
 
     <string name="google_map_API">AIzaSyD5QdIiBcHYhVunbhYlqUWO2cUI5sapSh8</string>
+    <string name="traffic_rules_quiz">Traffic Rules Quiz</string>
 </resources>

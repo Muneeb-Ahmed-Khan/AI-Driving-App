@@ -10,6 +10,8 @@
     <color name="orange">#FFA500</color>
     <color name="green">#00FF00</color>
     <color name="red">#FF0000</color>
+    <color name="rounded_background_color">#FF33B5E5</color>
+    <color name="rounded_background_color2">#7e6df3</color>
 
 
 </resources>
