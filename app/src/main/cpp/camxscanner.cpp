@@ -197,13 +197,16 @@ std::vector<string> processFrame(long matAddr){
                 __android_log_print(ANDROID_LOG_INFO, "MyTag", label.c_str());
         #endif
     }
-    return labels;
+
 
     vector<double> layersTimes;
     double freq = cv::getTickFrequency() / 1000;
     double t = model.getPerfProfile(layersTimes) / freq;
     string label = format("Inference time : %.2f ms", t);
     cv::putText(image, label, Point(20, 40), FONT_FACE, FONT_SCALE, RED);
+
+    return labels;
+
 }
 
 /**

@@ -104,9 +104,9 @@ public class SignDetectionDriveMode extends AppCompatActivity {
 
                         //Procesing
                         String[] labels = processFrameFromJNI(mat.getNativeObjAddr());
-                        for(String label: labels){
+                        //for(String label: labels){
                             // Log.d(TAG, "Label Found: "  + label);
-                        }
+                        //}
 
                         // Convert from BGR to RGB using Imgproc.COLOR_RGB2BGR, Android works on RGB
                         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2RGB);
