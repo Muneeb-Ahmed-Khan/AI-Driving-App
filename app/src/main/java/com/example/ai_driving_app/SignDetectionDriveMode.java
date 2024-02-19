@@ -6,10 +6,11 @@ import android.graphics.Bitmap;
 import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Surface;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
-
+import android.util.Size;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -83,6 +84,7 @@ public class SignDetectionDriveMode extends AppCompatActivity {
                 CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
 
                 imageAnalysis = new ImageAnalysis.Builder()
+                                .setTargetResolution(new Size(640, 640))
                                 // enable the following line if RGBA output is needed.
                                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -103,9 +105,9 @@ public class SignDetectionDriveMode extends AppCompatActivity {
                         Core.flip(mat, mat, 1);
 
                         //Procesing
-                        String[] labels = processFrameFromJNI(mat.getNativeObjAddr());
+                        processFrameFromJNI(mat.getNativeObjAddr());
                         //for(String label: labels){
-                            // Log.d(TAG, "Label Found: "  + label);
+                        // Log.d(TAG, "Label Found: "  + label);
                         //}
 
                         // Convert from BGR to RGB using Imgproc.COLOR_RGB2BGR, Android works on RGB

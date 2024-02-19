@@ -218,6 +218,9 @@ std::vector<string> processFrame(long matAddr){
  */
 bool loadOnnxModel(std::string modelPath){
     model = cv::dnn::readNetFromONNX(modelPath);
+    model.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
+    model.setPreferableTarget(cv::dnn::DNN_TARGET_OPENCL); // You can change this to DNN_TARGET_VULKAN if needed
+
     if (model.empty()) {
         std::cerr << "Failed to load the ONNX model." << std::endl;
         return false;
