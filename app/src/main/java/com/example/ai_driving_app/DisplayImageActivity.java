@@ -88,12 +88,15 @@ public class DisplayImageActivity extends AppCompatActivity {
 
     public void takePhoto(Uri imageUri){
 
+        Log.d(TAG, "Trying to upload image.");
+
         // Create a reference to the location where you want to upload the image
         StorageReference imageRef = storageRef.child("images/" + UUID.randomUUID().toString());
 
         // Upload the image
         UploadTask uploadTask = imageRef.putFile(imageUri);
         uploadTask.addOnSuccessListener(taskSnapshot -> {
+                    Log.d(TAG, "Image uploaded successfully.");
                     // Image uploaded successfully, get the download URL
                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         // Uri contains the download URL
@@ -106,7 +109,7 @@ public class DisplayImageActivity extends AppCompatActivity {
                     });
                 })
                 .addOnFailureListener(e -> {
-                    // Handle upload failures
+                    Log.d(TAG, e.getMessage());
                 });
 
     }
